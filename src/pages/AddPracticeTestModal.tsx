@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Plus, Trash2, CheckCircle, FileText, Upload, User, Users, Globe, Download, FileSpreadsheet } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 interface AddPracticeTestModalProps {
   onClose: () => void;
@@ -47,7 +48,7 @@ export const AddPracticeTestModal = ({ onClose, onSuccess }: AddPracticeTestModa
 
   useEffect(() => {
     // Fetch students list for individual target selection
-    fetch('http://localhost:5000/api/users?role=student')
+    fetch(`${API_BASE_URL}/api/users?role=student`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setStudents(data);
@@ -55,7 +56,8 @@ export const AddPracticeTestModal = ({ onClose, onSuccess }: AddPracticeTestModa
       .catch(err => console.error('Error fetching students:', err));
 
     // Fetch groups list for group target selection
-    fetch('http://localhost:5000/api/groups')
+    fetch(`${API_BASE_URL}/api/groups`)
+
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setGroups(data);
@@ -250,7 +252,7 @@ export const AddPracticeTestModal = ({ onClose, onSuccess }: AddPracticeTestModa
 
     try {
       const base64Data = await toBase64(pdfFile);
-      const res = await fetch('http://localhost:5000/api/convert-pdf-to-mcq', {
+      const res = await fetch(`${API_BASE_URL}/api/convert-pdf-to-mcq`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fileData: base64Data })
@@ -357,7 +359,7 @@ export const AddPracticeTestModal = ({ onClose, onSuccess }: AddPracticeTestModa
       // Upload PDF test paper if selected
       if (file) {
         const base64Data = await toBase64(file);
-        const uploadRes = await fetch('http://localhost:5000/api/upload-pdf', {
+        const uploadRes = await fetch(`${API_BASE_URL}/api/upload-pdf`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -374,7 +376,8 @@ export const AddPracticeTestModal = ({ onClose, onSuccess }: AddPracticeTestModa
       }
 
       // Save Practice Test to backend
-      const res = await fetch('http://localhost:5000/api/tests', {
+      const res = await fetch(`${API_BASE_URL}/api/tests`, {
+
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Download, Upload, FileText, CheckCircle, RefreshCw } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const AcademicsManagement = () => {
   const [students, setStudents] = useState<any[]>([]);
@@ -61,7 +62,7 @@ export const AcademicsManagement = () => {
     });
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/id/${selectedStudent._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/id/${selectedStudent._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -89,7 +90,7 @@ export const AcademicsManagement = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/users?role=student');
+      const res = await fetch(`${API_BASE_URL}/api/users?role=student`);
       const data = await res.json();
       setStudents(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -117,7 +118,7 @@ export const AcademicsManagement = () => {
       const dataUrl = e.target?.result as string;
       try {
         // Step 1: Save file to backend uploads directory
-        const uploadRes = await fetch('http://localhost:5000/api/upload-pdf', {
+        const uploadRes = await fetch(`${API_BASE_URL}/api/upload-pdf`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -134,7 +135,7 @@ export const AcademicsManagement = () => {
         const uploadData = await uploadRes.json();
 
         // Step 2: Store file URL in student MongoDB document
-        const res = await fetch(`http://localhost:5000/api/users/${encodeURIComponent(student.email)}?role=student`, {
+        const res = await fetch(`${API_BASE_URL}/api/users/${encodeURIComponent(student.email)}?role=student`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -180,7 +181,8 @@ export const AcademicsManagement = () => {
     const targetRemarks = isSelected ? editingRemarks : (student.teacherRemarks || '');
 
     try {
-      const res = await fetch('http://localhost:5000/api/users/generate-report-card', {
+      const res = await fetch(`${API_BASE_URL}/api/users/generate-report-card`, {
+
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -534,12 +536,13 @@ export const AcademicsManagement = () => {
                       reader.onload = async (e) => {
                         const base64 = e.target?.result as string;
                         try {
-                          await fetch(`http://localhost:5000/api/users/id/${st._id}`, {
+                          await fetch(`${API_BASE_URL}/api/users/id/${st._id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ profilePicUrl: base64 })
                           });
                           fetchStudents();
+
                         } catch (err) {
                           console.error('Error updating student photo:', err);
                         }

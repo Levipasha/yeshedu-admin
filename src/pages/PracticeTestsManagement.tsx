@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, CheckSquare, Trash2, FileText, Clock, Award, RefreshCw, HelpCircle, UserCheck, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import { AddPracticeTestModal } from './AddPracticeTestModal';
+import { API_BASE_URL } from '../config/api';
 
 export const PracticeTestsManagement = () => {
   const [activeTab, setActiveTab] = useState<'tests' | 'results'>('tests');
@@ -17,8 +18,8 @@ export const PracticeTestsManagement = () => {
     setLoading(true);
     try {
       const [testsRes, attemptsRes] = await Promise.all([
-        fetch('http://localhost:5000/api/tests'),
-        fetch('http://localhost:5000/api/tests/results')
+        fetch(`${API_BASE_URL}/api/tests`),
+        fetch(`${API_BASE_URL}/api/tests/results`)
       ]);
 
       if (testsRes.ok) {
@@ -44,7 +45,8 @@ export const PracticeTestsManagement = () => {
   const handleDeleteTest = async (id: string) => {
     if (!confirm('Are you sure you want to delete this practice test?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/tests/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/tests/${id}`, {
+
         method: 'DELETE'
       });
       if (res.ok) {

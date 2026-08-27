@@ -25,6 +25,12 @@ export const AdminLayout = () => {
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true' || !!localStorage.getItem('adminToken');
 
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login', { replace: true });

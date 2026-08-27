@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { GraduationCap, Users, CheckCircle2, Clock, Search, Filter, AlertCircle, RefreshCw, Download } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import { API_BASE_URL } from '../config/api';
 
 export const Dashboard = () => {
   const [studentCount, setStudentCount] = useState<number>(0);
@@ -36,10 +37,10 @@ export const Dashboard = () => {
       if (userEmail) headers['user-email'] = userEmail;
 
       const [studentsRes, parentsRes, revenueRes, statusListRes] = await Promise.all([
-        fetch('http://localhost:5000/api/users?role=student'),
-        fetch('http://localhost:5000/api/users?role=parent'),
-        fetch('http://localhost:5000/api/fees/summary', { headers }),
-        fetch('http://localhost:5000/api/fees/all-status', { headers })
+        fetch(`${API_BASE_URL}/api/users?role=student`),
+        fetch(`${API_BASE_URL}/api/users?role=parent`),
+        fetch(`${API_BASE_URL}/api/fees/summary`, { headers }),
+        fetch(`${API_BASE_URL}/api/fees/all-status`, { headers })
       ]);
 
       const students = await studentsRes.json();
@@ -117,7 +118,7 @@ export const Dashboard = () => {
       if (token) headers['Authorization'] = `Bearer ${token}`;
       if (userEmail) headers['user-email'] = userEmail;
 
-      const res = await fetch(`http://localhost:5000/api/fees/payments/${paymentId}/confirm-cash`, {
+      const res = await fetch(`${API_BASE_URL}/api/fees/payments/${paymentId}/confirm-cash`, {
         method: 'POST',
         headers
       });

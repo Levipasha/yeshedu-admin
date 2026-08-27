@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Save, Plus, Trash2, ArrowUp, ArrowDown, Eye, EyeOff, Upload, Image, Sparkles } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const MangaLearningManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export const MangaLearningManagement = () => {
   const [newImageAlt, setNewImageAlt] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/home-learning')
+    fetch(`${API_BASE_URL}/api/home-learning`)
       .then(async res => {
         if (!res.ok) throw new Error('Failed to fetch');
         return res.json();
@@ -40,7 +41,7 @@ export const MangaLearningManagement = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch('http://localhost:5000/api/home-learning', {
+      const res = await fetch(`${API_BASE_URL}/api/home-learning`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config)
@@ -78,7 +79,8 @@ export const MangaLearningManagement = () => {
       const base64Data = reader.result as string;
 
       try {
-        const res = await fetch('http://localhost:5000/api/upload-image', {
+        const res = await fetch(`${API_BASE_URL}/api/upload-image`, {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

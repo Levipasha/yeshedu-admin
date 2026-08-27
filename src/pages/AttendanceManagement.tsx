@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, TrendingUp, CheckCircle2, Clock, XCircle, BarChart3, UserCheck, Sparkles, Filter, Check, ShieldCheck, Download, FileText } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const AttendanceManagement = () => {
   const [students, setStudents] = useState<any[]>([]);
@@ -13,7 +14,8 @@ export const AttendanceManagement = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/users?role=student');
+      const res = await fetch(`${API_BASE_URL}/api/users?role=student`);
+
       const data = await res.json();
       setStudents(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -55,19 +57,6 @@ export const AttendanceManagement = () => {
     return null;
   };
 
-  const validAtt = students
-    .map(s => parseInt((s.attendance || '').replace('%', ''), 10))
-    .filter(n => !isNaN(n));
-  const avgAttendance = validAtt.length > 0 
-    ? Math.round(validAtt.reduce((a, b) => a + b, 0) / validAtt.length) 
-    : 0;
-
-  const lateTodayCount = students.filter(s => s.attendanceStatus === 'Late').length;
-  const absentTodayCount = students.filter(s => s.attendanceStatus === 'Absent').length;
-
-  const latePercentage = students.length > 0 ? Math.round((lateTodayCount / students.length) * 100) : 0;
-  const absentPercentage = students.length > 0 ? Math.round((absentTodayCount / students.length) * 100) : 0;
-
   // Helper to format 30-day percentage rate (3.33% per day present)
   const format30DayRate = (present: number, late: number = 0) => {
     const totalVal = (present + late * 0.5) * (100 / 30);
@@ -95,11 +84,31 @@ export const AttendanceManagement = () => {
     const lateCount = days.filter(d => d === 'Late').length;
     const absentCount = days.filter(d => d === 'Absent').length;
 
-    const rateStr = format30DayRate(presentCount, lateCount);
-    const percentage = parseFloat(rateStr.replace('%', '')) || 0;
+    const hasMarkedDays = recordedDates.length > 0 || (student.attendanceStatus && student.attendanceStatus !== 'Not Marked');
+    const rateStr = hasMarkedDays ? format30DayRate(presentCount, lateCount) : 'Not Marked';
+    const percentage = hasMarkedDays ? parseFloat(format30DayRate(presentCount, lateCount).replace('%', '')) || 0 : null;
 
-    return { percentage, rateStr, days, dayDates, presentCount, lateCount, absentCount, totalDaysRecorded: recordedDates.length };
+    return { percentage, rateStr, days, dayDates, presentCount, lateCount, absentCount, totalDaysRecorded: recordedDates.length, hasMarkedDays };
   };
+
+  const markedHistories = students
+    .map(s => get30DayHistory(s))
+    .filter(h => h.hasMarkedDays && h.percentage !== null);
+
+  const avgAttendance = markedHistories.length > 0
+    ? Math.round(markedHistories.reduce((a, b) => a + (b.percentage || 0), 0) / markedHistories.length)
+    : null;
+
+  const markedStudentsCount = students.filter(s => {
+    const hasHistory = dateStatusMap[s._id] && Object.keys(dateStatusMap[s._id]).length > 0;
+    return hasHistory || (s.attendanceStatus && s.attendanceStatus !== 'Not Marked');
+  }).length;
+
+  const lateTodayCount = students.filter(s => s.attendanceStatus === 'Late').length;
+  const absentTodayCount = students.filter(s => s.attendanceStatus === 'Absent').length;
+
+  const latePercentage = markedStudentsCount > 0 ? Math.round((lateTodayCount / markedStudentsCount) * 100) : null;
+  const absentPercentage = markedStudentsCount > 0 ? Math.round((absentTodayCount / markedStudentsCount) * 100) : null;
 
   // Quick 1-click attendance entry handler for selectedDate (deselects if tapping same status again)
   const handleQuickMarkAttendance = async (student: any, newStatus: 'Present' | 'Late' | 'Absent') => {
@@ -140,8 +149,8 @@ export const AttendanceManagement = () => {
 
     try {
       const url = student._id 
-        ? `http://localhost:5000/api/users/id/${student._id}`
-        : `http://localhost:5000/api/users/${encodeURIComponent(student.email)}?role=student`;
+        ? `${API_BASE_URL}/api/users/id/${student._id}`
+        : `${API_BASE_URL}/api/users/${encodeURIComponent(student.email)}?role=student`;
 
       await fetch(url, {
         method: 'PUT',
@@ -208,8 +217,9 @@ export const AttendanceManagement = () => {
       await Promise.all(
         students.map((st) => {
           const url = st._id 
-            ? `http://localhost:5000/api/users/id/${st._id}`
-            : `http://localhost:5000/api/users/${encodeURIComponent(st.email)}?role=student`;
+            ? `${API_BASE_URL}/api/users/id/${st._id}`
+            : `${API_BASE_URL}/api/users/${encodeURIComponent(st.email)}?role=student`;
+
 
           return fetch(url, {
             method: 'PUT',
@@ -600,8 +610,8 @@ export const AttendanceManagement = () => {
           <div className="p-5 bg-gradient-to-br from-emerald-50/80 to-emerald-50/20 rounded-2xl border border-emerald-100/80 flex items-center justify-between shadow-2xs">
             <div>
               <p className="text-xs font-bold text-emerald-800">30-Day Cohort Present</p>
-              <p className="text-2xl font-black text-emerald-700 mt-1">{avgAttendance}%</p>
-              <p className="text-[11px] text-emerald-600 mt-0.5 font-medium">Real student average</p>
+              <p className="text-2xl font-black text-emerald-700 mt-1">{avgAttendance !== null ? `${avgAttendance}%` : 'Not Marked'}</p>
+              <p className="text-[11px] text-emerald-600 mt-0.5 font-medium">{avgAttendance !== null ? 'Real student average' : 'Awaiting daily marking'}</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
               <CheckCircle2 className="w-5 h-5" />
@@ -623,7 +633,7 @@ export const AttendanceManagement = () => {
             <div>
               <p className="text-xs font-bold text-amber-800">Late Attendance Rate</p>
               <p className="text-2xl font-black text-amber-600 mt-1">
-                {latePercentage}%
+                {latePercentage !== null ? `${latePercentage}%` : 'Not Marked'}
               </p>
               <p className="text-[11px] text-amber-600 mt-0.5 font-medium">{lateTodayCount} of {students.length} students late</p>
             </div>
@@ -636,7 +646,7 @@ export const AttendanceManagement = () => {
             <div>
               <p className="text-xs font-bold text-red-800">Absenteeism Rate</p>
               <p className="text-2xl font-black text-red-600 mt-1">
-                {absentPercentage}%
+                {absentPercentage !== null ? `${absentPercentage}%` : 'Not Marked'}
               </p>
               <p className="text-[11px] text-red-500 mt-0.5 font-medium">{absentTodayCount} of {students.length} students absent</p>
             </div>
@@ -688,12 +698,18 @@ export const AttendanceManagement = () => {
 
                       {/* 30-Day Attendance Status Badge */}
                       <div className="flex items-center gap-3 text-xs">
-                        <div className="px-3.5 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-bold text-xs flex items-center gap-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>{history.presentCount}/30 Days Present</span>
-                          <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-100/90 px-1.5 py-0.5 rounded-md">
-                            {history.rateStr}
-                          </span>
+                        <div className={`px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-2 ${
+                          history.hasMarkedDays 
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                            : 'bg-gray-100 text-gray-500 border border-gray-200'
+                        }`}>
+                          <CheckCircle2 className={`w-3.5 h-3.5 ${history.hasMarkedDays ? 'text-emerald-600' : 'text-gray-400'}`} />
+                          <span>{history.hasMarkedDays ? `${history.presentCount}/30 Days Present` : 'Not Marked'}</span>
+                          {history.hasMarkedDays && (
+                            <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-100/90 px-1.5 py-0.5 rounded-md">
+                              {history.rateStr}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

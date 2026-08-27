@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Upload, FileText, CheckCircle, User, Users, Globe } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 interface AddAssignmentModalProps {
   onClose: () => void;
@@ -27,7 +28,7 @@ export const AddAssignmentModal = ({ onClose, onSuccess }: AddAssignmentModalPro
 
   useEffect(() => {
     // Fetch students list for individual assignment target selection
-    fetch('http://localhost:5000/api/users?role=student')
+    fetch(`${API_BASE_URL}/api/users?role=student`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setStudents(data);
@@ -35,7 +36,8 @@ export const AddAssignmentModal = ({ onClose, onSuccess }: AddAssignmentModalPro
       .catch(err => console.error('Error fetching students:', err));
 
     // Fetch groups list for group target selection
-    fetch('http://localhost:5000/api/groups')
+    fetch(`${API_BASE_URL}/api/groups`)
+
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setGroups(data);
@@ -116,7 +118,7 @@ export const AddAssignmentModal = ({ onClose, onSuccess }: AddAssignmentModalPro
       const base64Data = await toBase64(file);
 
       // 2. Upload file to backend server
-      const uploadRes = await fetch('http://localhost:5000/api/upload-pdf', {
+      const uploadRes = await fetch(`${API_BASE_URL}/api/upload-pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -132,7 +134,8 @@ export const AddAssignmentModal = ({ onClose, onSuccess }: AddAssignmentModalPro
       const uploadData = await uploadRes.json();
 
       // 3. Save assignment to backend database
-      const assignRes = await fetch('http://localhost:5000/api/assignments', {
+      const assignRes = await fetch(`${API_BASE_URL}/api/assignments`, {
+
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

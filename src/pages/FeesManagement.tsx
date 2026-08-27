@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 export const FeesManagement = () => {
   const [students, setStudents] = useState<any[]>([]);
@@ -26,9 +27,10 @@ export const FeesManagement = () => {
 
     try {
       const [stRes, cyclesRes] = await Promise.all([
-        fetch('http://localhost:5000/api/users?role=student'),
-        fetch('http://localhost:5000/api/fees/cycles', { headers })
+        fetch(`${API_BASE_URL}/api/users?role=student`),
+        fetch(`${API_BASE_URL}/api/fees/cycles`, { headers })
       ]);
+
 
       const data = await stRes.json();
       const stList = Array.isArray(data) ? data : [];
@@ -86,7 +88,8 @@ export const FeesManagement = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/fees/cycle`, {
+      const res = await fetch(`${API_BASE_URL}/api/fees/cycle`, {
+
         method: 'POST',
         headers,
         body: JSON.stringify({

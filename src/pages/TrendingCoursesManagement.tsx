@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Trash2, Edit, Plus, X } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const TrendingCoursesManagement = () => {
   const [courses, setCourses] = useState<any[]>([]);
@@ -8,7 +9,7 @@ export const TrendingCoursesManagement = () => {
   const [selectedCourseToAdd, setSelectedCourseToAdd] = useState('');
 
   const fetchCourses = () => {
-    fetch('http://localhost:5000/api/courses')
+    fetch(`${API_BASE_URL}/api/courses`)
       .then(res => res.json())
       .then(data => {
         setCourses(data);
@@ -29,7 +30,8 @@ export const TrendingCoursesManagement = () => {
 
   const handleToggleTrending = async (course: any, isTrending: boolean) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/courses/${course._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/courses/${course._id}`, {
+
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...course, isTrending })

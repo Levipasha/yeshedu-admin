@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Trash2, Edit, X, Settings2 } from 'lucide-react';
 import { useBlocker } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 
 const DEFAULT_COURSE_STATE = {
   subject: '',
@@ -70,7 +71,7 @@ export const CoursesManagement = () => {
   }, [isFormDirty]);
 
   const fetchCourses = () => {
-    fetch('http://localhost:5000/api/courses')
+    fetch(`${API_BASE_URL}/api/courses`)
       .then(res => res.json())
       .then(data => {
         setCourses(data);
@@ -83,7 +84,7 @@ export const CoursesManagement = () => {
   };
 
   const fetchSubjects = () => {
-    fetch('http://localhost:5000/api/subjects')
+    fetch(`${API_BASE_URL}/api/subjects`)
       .then(res => res.json())
       .then(data => setSubjects(data))
       .catch(err => console.error('Error fetching subjects:', err));
@@ -97,7 +98,7 @@ export const CoursesManagement = () => {
   const handleSaveNewSubject = async () => {
     if (!newSubjectName.trim()) return;
     try {
-      const res = await fetch('http://localhost:5000/api/subjects', {
+      const res = await fetch(`${API_BASE_URL}/api/subjects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newSubjectName.trim() })
@@ -125,7 +126,7 @@ export const CoursesManagement = () => {
     if (!window.confirm(confirmMessage)) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/subjects/${subjectId}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/subjects/${subjectId}`, { method: 'DELETE' });
       if (res.ok) {
         fetchSubjects();
         // If the deleted subject was selected, clear it
@@ -141,7 +142,7 @@ export const CoursesManagement = () => {
   const handleDeleteCourse = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this course?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/courses/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/courses/${id}`, { method: 'DELETE' });
       if (res.ok) fetchCourses();
     } catch (err) {
       console.error(err);
@@ -176,7 +177,7 @@ export const CoursesManagement = () => {
       // If image is a local base64 file string, upload to server disk
       if (courseImage && courseImage.startsWith('data:image/')) {
         try {
-          const uploadRes = await fetch('http://localhost:5000/api/upload-image', {
+          const uploadRes = await fetch(`${API_BASE_URL}/api/upload-image`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -203,8 +204,8 @@ export const CoursesManagement = () => {
       };
 
       const url = editingCourseId 
-        ? `http://localhost:5000/api/courses/${editingCourseId}` 
-        : 'http://localhost:5000/api/courses';
+        ? `${API_BASE_URL}/api/courses/${editingCourseId}` 
+        : `${API_BASE_URL}/api/courses`;
       const method = editingCourseId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {

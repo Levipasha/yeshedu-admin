@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 export const HomeworkManagement = () => {
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/users?role=student')
+    fetch(`${API_BASE_URL}/api/users?role=student`)
+
       .then(res => res.json())
       .then(data => {
         setStudents(Array.isArray(data) ? data : []);

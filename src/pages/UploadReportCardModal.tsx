@@ -1,7 +1,9 @@
 import { useState, useRef } from 'react';
 import { X, Upload, FileText, CheckCircle } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 interface UploadReportCardModalProps {
+
   userEmail: string;
   userName: string;
   onClose: () => void;
@@ -54,7 +56,7 @@ export const UploadReportCardModal = ({ userEmail, userName, onClose, onSuccess 
       const base64Data = await toBase64(file);
 
       // 2. Upload file to backend server
-      const uploadRes = await fetch('http://localhost:5000/api/upload-pdf', {
+      const uploadRes = await fetch(`${API_BASE_URL}/api/upload-pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -68,7 +70,8 @@ export const UploadReportCardModal = ({ userEmail, userName, onClose, onSuccess 
 
       // 3. Update user record with report card link
       // Notice we update using email because the API allows PUT by email
-      const userRes = await fetch(`http://localhost:5000/api/users/${encodeURIComponent(userEmail)}`, {
+      const userRes = await fetch(`${API_BASE_URL}/api/users/${encodeURIComponent(userEmail)}`, {
+
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

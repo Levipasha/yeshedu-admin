@@ -3,6 +3,7 @@ import { StudentDetailModal } from './StudentDetailModal';
 import { UploadReportCardModal } from './UploadReportCardModal';
 import { adminAuth } from '../firebase';
 import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { API_BASE_URL } from '../config/api';
 
 export const ParentsManagement = () => {
   const [parents, setParents] = useState<any[]>([]);
@@ -46,8 +47,8 @@ export const ParentsManagement = () => {
     setLoading(true);
     try {
       const [parentsRes, studentsRes] = await Promise.all([
-        fetch('http://localhost:5000/api/users?role=parent'),
-        fetch('http://localhost:5000/api/users?role=student')
+        fetch(`${API_BASE_URL}/api/users?role=parent`),
+        fetch(`${API_BASE_URL}/api/users?role=student`)
       ]);
 
       const parentsData = await parentsRes.json();
@@ -91,7 +92,7 @@ export const ParentsManagement = () => {
 
     setUpdatingParent(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${editParent._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${editParent._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -123,7 +124,7 @@ export const ParentsManagement = () => {
 
     try {
       if (id) {
-        await fetch(`http://localhost:5000/api/users/${id}`, {
+        await fetch(`${API_BASE_URL}/api/users/${id}`, {
           method: 'DELETE'
         });
       }
@@ -142,7 +143,7 @@ export const ParentsManagement = () => {
     setLinkError('');
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${encodeURIComponent(linkTargetParent.email)}?role=parent`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${encodeURIComponent(linkTargetParent.email)}?role=parent`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ studentId: newStudentId.trim() })
@@ -182,7 +183,7 @@ export const ParentsManagement = () => {
       const firebaseUid = userCredential.user.uid;
       await signOut(adminAuth);
 
-      const res = await fetch('http://localhost:5000/api/users', {
+      const res = await fetch(`${API_BASE_URL}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

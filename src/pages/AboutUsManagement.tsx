@@ -18,6 +18,7 @@ import {
   Layout,
   Upload
 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const AboutUsManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -92,7 +93,7 @@ export const AboutUsManagement = () => {
   const fetchAboutData = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/about');
+      const res = await fetch(`${API_BASE_URL}/api/about`);
       if (res.ok) {
         const data = await res.json();
         if (data) {
@@ -143,6 +144,7 @@ export const AboutUsManagement = () => {
     } finally {
       setLoading(false);
     }
+
   };
 
   useEffect(() => {
@@ -158,7 +160,7 @@ export const AboutUsManagement = () => {
       const payload = { ...(dataToSave || aboutData) };
       delete (payload as any)._id;
 
-      const res = await fetch('http://localhost:5000/api/about', {
+      const res = await fetch(`${API_BASE_URL}/api/about`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -200,7 +202,8 @@ export const AboutUsManagement = () => {
       const base64Data = reader.result as string;
 
       try {
-        const res = await fetch('http://localhost:5000/api/upload-image', {
+        const res = await fetch(`${API_BASE_URL}/api/upload-image`, {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

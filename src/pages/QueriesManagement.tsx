@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Trash2, Mail, Phone, Clock } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const QueriesManagement = () => {
   const [queries, setQueries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchQueries = () => {
-    fetch('http://localhost:5000/api/contact')
+    fetch(`${API_BASE_URL}/api/contact`)
       .then(res => res.json())
       .then(data => {
         setQueries(data);
@@ -25,7 +26,8 @@ export const QueriesManagement = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this query?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/contact/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/contact/${id}`, { method: 'DELETE' });
+
       if (res.ok) fetchQueries();
     } catch (err) {
       console.error(err);

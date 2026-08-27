@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, FileText, Calendar, Download, CheckCircle, Camera, User, Eye, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { AddAssignmentModal } from './AddAssignmentModal';
+import { API_BASE_URL } from '../config/api';
 
 export const AssignmentsManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,8 +16,8 @@ export const AssignmentsManagement = () => {
   const fetchAssignmentsAndSubmissions = async () => {
     try {
       const [resAssignments, resSubmissions] = await Promise.all([
-        fetch('http://localhost:5000/api/assignments'),
-        fetch('http://localhost:5000/api/assignments/submissions/all')
+        fetch(`${API_BASE_URL}/api/assignments`),
+        fetch(`${API_BASE_URL}/api/assignments/submissions/all`)
       ]);
 
       if (resAssignments.ok) {
@@ -43,7 +44,7 @@ export const AssignmentsManagement = () => {
     }, 3000);
 
     // Socket real-time push event listener
-    const socket = io('http://localhost:5000');
+    const socket = io(API_BASE_URL);
     socket.on('newSubmission', (newSub) => {
       console.log('Real-time assignment submission received:', newSub);
       setSubmissions(prev => {
@@ -216,7 +217,7 @@ export const AssignmentsManagement = () => {
                               onClick={async () => {
                                 if (!confirm('Are you sure you want to delete this assignment?')) return;
                                 try {
-                                  const res = await fetch(`http://localhost:5000/api/assignments/${assignId}`, { method: 'DELETE' });
+                                  const res = await fetch(`${API_BASE_URL}/api/assignments/${assignId}`, { method: 'DELETE' });
                                   if (res.ok) {
                                     setAssignments(assignments.filter(a => (a._id || a.id) !== assignId));
                                   }

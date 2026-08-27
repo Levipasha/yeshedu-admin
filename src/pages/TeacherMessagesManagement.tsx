@@ -4,6 +4,7 @@ import {
   CheckCircle, Hash, X, RefreshCw
 } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
+import { API_BASE_URL } from '../config/api';
 
 interface UserItem {
   _id: string;
@@ -61,9 +62,9 @@ export const TeacherMessagesManagement = () => {
     setLoading(true);
     try {
       const [parentsRes, studentsRes, groupsRes] = await Promise.all([
-        fetch('http://localhost:5000/api/users?role=parent'),
-        fetch('http://localhost:5000/api/users?role=student'),
-        fetch('http://localhost:5000/api/groups')
+        fetch(`${API_BASE_URL}/api/users?role=parent`),
+        fetch(`${API_BASE_URL}/api/users?role=student`),
+        fetch(`${API_BASE_URL}/api/groups`)
       ]);
 
       const parentsData = await parentsRes.json();
@@ -89,7 +90,7 @@ export const TeacherMessagesManagement = () => {
     fetchData();
 
     // Socket setup
-    const newSocket = io('http://localhost:5000');
+    const newSocket = io(API_BASE_URL);
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
@@ -139,7 +140,7 @@ export const TeacherMessagesManagement = () => {
 
     if (selectedChat.type === 'private') {
       const userId = selectedChat.data._id;
-      fetch(`http://localhost:5000/api/chat/between/${adminId}/${userId}`)
+      fetch(`${API_BASE_URL}/api/chat/between/${adminId}/${userId}`)
         .then((res) => res.json())
         .then((data) => {
           setMessages(Array.isArray(data) ? data : []);
@@ -151,7 +152,7 @@ export const TeacherMessagesManagement = () => {
       if (socket) {
         socket.emit('joinGroup', groupId);
       }
-      fetch(`http://localhost:5000/api/chat/group/${groupId}`)
+      fetch(`${API_BASE_URL}/api/chat/group/${groupId}`)
         .then((res) => res.json())
         .then((data) => {
           setMessages(Array.isArray(data) ? data : []);
@@ -187,7 +188,7 @@ export const TeacherMessagesManagement = () => {
         });
       }
 
-      await fetch('http://localhost:5000/api/chat/send', {
+      await fetch(`${API_BASE_URL}/api/chat/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -215,7 +216,7 @@ export const TeacherMessagesManagement = () => {
         });
       }
 
-      await fetch('http://localhost:5000/api/chat/send', {
+      await fetch(`${API_BASE_URL}/api/chat/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -235,7 +236,7 @@ export const TeacherMessagesManagement = () => {
     setCreatingGroup(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/groups', {
+      const res = await fetch(`${API_BASE_URL}/api/groups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, X, Check } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 interface ChangeCourseModalProps {
   userEmail: string;
@@ -16,7 +17,7 @@ export const ChangeCourseModal = ({ userEmail, userName, currentCourse, onClose,
   const [courses, setCourses] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/courses')
+    fetch(`${API_BASE_URL}/api/courses`)
       .then(res => res.json())
       .then(data => setCourses(data))
       .catch(err => console.error('Error fetching courses:', err));
@@ -28,7 +29,8 @@ export const ChangeCourseModal = ({ userEmail, userName, currentCourse, onClose,
     setError('');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${encodeURIComponent(userEmail)}?role=student`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${encodeURIComponent(userEmail)}?role=student`, {
+
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ courseName })

@@ -3,8 +3,10 @@ import {
   User, GraduationCap, Calendar, FileText, CheckCircle, CreditCard, 
   MessageSquare, Download, X, Award, Check, CheckSquare, Plus, Trash2, Save
 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 interface StudentDetailModalProps {
+
   student: any;
   parent?: any;
   onClose: () => void;
@@ -65,7 +67,8 @@ export const StudentDetailModal = ({ student, parent, onClose, onUpdate }: Stude
     if (!student?._id) return;
     setSavingChecklist(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${student._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${student._id}`, {
+
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ checklist })

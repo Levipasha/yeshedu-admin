@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Edit2, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export const BlogsManagement = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -21,7 +22,7 @@ export const BlogsManagement = () => {
   const [formData, setFormData] = useState(initialFormState);
 
   const fetchBlogs = () => {
-    fetch('http://localhost:5000/api/blogs')
+    fetch(`${API_BASE_URL}/api/blogs`)
       .then(res => res.json())
       .then(data => {
         setBlogs(data);
@@ -52,8 +53,8 @@ export const BlogsManagement = () => {
     e.preventDefault();
     const method = editingBlog ? 'PUT' : 'POST';
     const url = editingBlog 
-      ? `http://localhost:5000/api/blogs/${editingBlog._id}`
-      : 'http://localhost:5000/api/blogs';
+      ? `${API_BASE_URL}/api/blogs/${editingBlog._id}`
+      : `${API_BASE_URL}/api/blogs`;
 
     try {
       const res = await fetch(url, {
@@ -75,7 +76,8 @@ export const BlogsManagement = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this blog?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/blogs/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/blogs/${id}`, { method: 'DELETE' });
+
       if (res.ok) fetchBlogs();
     } catch (err) {
       console.error(err);

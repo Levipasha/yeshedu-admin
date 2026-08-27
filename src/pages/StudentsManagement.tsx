@@ -3,6 +3,7 @@ import { StudentDetailModal } from './StudentDetailModal';
 import { ChangeCourseModal } from './ChangeCourseModal';
 import { adminAuth } from '../firebase';
 import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { API_BASE_URL } from '../config/api';
 
 export const StudentsManagement = () => {
   const [students, setStudents] = useState<any[]>([]);
@@ -45,7 +46,7 @@ export const StudentsManagement = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/users?role=student');
+      const res = await fetch(`${API_BASE_URL}/api/users?role=student`);
       const data = await res.json();
       setStudents(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -94,7 +95,7 @@ export const StudentsManagement = () => {
 
     setUpdatingStudent(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${editStudent._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${editStudent._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -142,7 +143,7 @@ export const StudentsManagement = () => {
       const firebaseUid = userCredential.user.uid;
       await signOut(adminAuth);
 
-      const res = await fetch('http://localhost:5000/api/users', {
+      const res = await fetch(`${API_BASE_URL}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -198,7 +199,7 @@ export const StudentsManagement = () => {
     }
     try {
       if (id) {
-        await fetch(`http://localhost:5000/api/users/${id}`, {
+        await fetch(`${API_BASE_URL}/api/users/${id}`, {
           method: 'DELETE'
         });
       }
@@ -272,7 +273,7 @@ export const StudentsManagement = () => {
                       reader.onload = async (event) => {
                         const base64 = event.target?.result as string;
                         try {
-                          await fetch(`http://localhost:5000/api/users/${student._id}`, {
+                          await fetch(`${API_BASE_URL}/api/users/${student._id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ profilePicUrl: base64 })
@@ -440,29 +441,14 @@ export const StudentsManagement = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Phone Number</label>
-                  <input 
-                    type="tel" 
-                    value={editFormData.phone}
-                    onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-red-500 text-gray-900"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Status</label>
-                  <select 
-                    value={editFormData.status}
-                    onChange={(e) => setEditFormData({...editFormData, status: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-red-500 text-gray-900"
-                  >
-                    <option value="Paid">Paid</option>
-                    <option value="Unpaid">Unpaid</option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Phone Number</label>
+                <input 
+                  type="tel" 
+                  value={editFormData.phone}
+                  onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-red-500 text-gray-900"
+                />
               </div>
 
               <div>
