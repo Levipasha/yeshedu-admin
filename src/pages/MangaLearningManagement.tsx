@@ -58,6 +58,40 @@ export const MangaLearningManagement = () => {
     setSaving(false);
   };
 
+  const handleHeroImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      if (!reader.result) return;
+      const base64Data = reader.result as string;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/upload-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileData: base64Data,
+            fileName: file.name
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.imageUrl) {
+            setConfig((prev: any) => ({ ...prev, heroImage: data.imageUrl }));
+            return;
+          }
+        }
+        setConfig((prev: any) => ({ ...prev, heroImage: base64Data }));
+      } catch (err) {
+        setConfig((prev: any) => ({ ...prev, heroImage: base64Data }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleCharacterImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -216,8 +250,171 @@ export const MangaLearningManagement = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         
-        {/* Left Column: General & Dialog Settings */}
+        {/* Left Column: General & Hero Settings */}
         <div className="space-y-6">
+          
+          {/* Hero Section Configuration Card */}
+          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
+            <h3 className="font-bold text-lg text-gray-900 border-b pb-2 flex items-center justify-between">
+              <span>Hero Section Settings</span>
+              <span className="text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-bold">Main Banner</span>
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-gray-600">Tagline Badge Text</label>
+                <input 
+                  type="text" 
+                  className="border border-gray-300 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
+                  value={config.heroBadgeText || 'QUALITY EDUCATION. BRIGHTER FUTURES.'}
+                  onChange={e => setConfig({...config, heroBadgeText: e.target.value})}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-gray-600">Heading Line 1</label>
+                <input 
+                  type="text" 
+                  className="border border-gray-300 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
+                  value={config.heroTitleLine1 || 'Learn Without'}
+                  onChange={e => setConfig({...config, heroTitleLine1: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-gray-600">Heading Highlight (Red Text)</label>
+                <input 
+                  type="text" 
+                  className="border border-gray-300 p-2.5 rounded-lg text-sm font-bold text-red-600 focus:ring-2 focus:ring-red-500 outline-none"
+                  value={config.heroTitleLine2 || 'Limits.'}
+                  onChange={e => setConfig({...config, heroTitleLine2: e.target.value})}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-gray-600">Button Text</label>
+                <input 
+                  type="text" 
+                  className="border border-gray-300 p-2.5 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-red-500 outline-none"
+                  value={config.heroButtonText || 'Start Learning'}
+                  onChange={e => setConfig({...config, heroButtonText: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-600">Paragraph 1 Text</label>
+              <textarea 
+                rows={2}
+                className="border border-gray-300 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
+                value={config.heroDescription1 || 'Give your child the right guidance, personal attention, and strong academic foundation they need to succeed.'}
+                onChange={e => setConfig({...config, heroDescription1: e.target.value})}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-600">Paragraph 2 Text</label>
+              <textarea 
+                rows={2}
+                className="border border-gray-300 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
+                value={config.heroDescription2 || 'Our tuition program provides a supportive and engaging learning environment for every student. We focus on helping students understand concepts clearly rather than simply memorizing answers.'}
+                onChange={e => setConfig({...config, heroDescription2: e.target.value})}
+              />
+            </div>
+
+            {/* Hero Image Upload */}
+            <div className="pt-2 border-t border-gray-100 space-y-2">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">Hero Main Image</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  placeholder="Paste Image URL or choose file below" 
+                  className="border border-gray-300 p-2.5 rounded-lg flex-1 text-sm focus:ring-2 focus:ring-red-500 outline-none"
+                  value={config.heroImage || ''}
+                  onChange={e => setConfig({...config, heroImage: e.target.value})}
+                />
+              </div>
+              <label className="flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 hover:border-red-400 p-3 rounded-xl cursor-pointer bg-gray-50 hover:bg-red-50/50 transition-colors text-xs font-bold text-gray-700">
+                <Upload className="w-4 h-4 text-red-600" />
+                <span>Upload New Hero Image</span>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={handleHeroImageUpload}
+                  className="hidden"
+                />
+              </label>
+              {config.heroImage && (
+                <div className="mt-2 h-32 rounded-xl overflow-hidden border border-gray-200">
+                  <img src={config.heroImage} alt="Hero Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+            </div>
+
+            {/* Floating Stat Cards Settings */}
+            <div className="pt-3 border-t border-gray-100 space-y-3">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">Floating Stat Cards</label>
+              
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex flex-col gap-1 border border-gray-200 p-2.5 rounded-xl bg-emerald-50/30">
+                  <span className="text-[11px] font-bold text-emerald-700">Stat 1 (Green)</span>
+                  <input 
+                    type="text" 
+                    placeholder="Value (50K+)"
+                    className="border border-gray-300 p-1.5 rounded text-xs font-bold bg-white"
+                    value={config.heroStat1Value || '50K+'}
+                    onChange={e => setConfig({...config, heroStat1Value: e.target.value})}
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Label (Students)"
+                    className="border border-gray-300 p-1.5 rounded text-xs bg-white mt-1"
+                    value={config.heroStat1Label || 'Students'}
+                    onChange={e => setConfig({...config, heroStat1Label: e.target.value})}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1 border border-gray-200 p-2.5 rounded-xl bg-red-50/30">
+                  <span className="text-[11px] font-bold text-red-700">Stat 2 (Red)</span>
+                  <input 
+                    type="text" 
+                    placeholder="Value (Live Classes)"
+                    className="border border-gray-300 p-1.5 rounded text-xs font-bold bg-white"
+                    value={config.heroStat2Value || 'Live Classes'}
+                    onChange={e => setConfig({...config, heroStat2Value: e.target.value})}
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Label (Daily)"
+                    className="border border-gray-300 p-1.5 rounded text-xs bg-white mt-1"
+                    value={config.heroStat2Label || 'Daily'}
+                    onChange={e => setConfig({...config, heroStat2Label: e.target.value})}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1 border border-gray-200 p-2.5 rounded-xl bg-blue-50/30">
+                  <span className="text-[11px] font-bold text-blue-700">Stat 3 (Blue)</span>
+                  <input 
+                    type="text" 
+                    placeholder="Value (500+)"
+                    className="border border-gray-300 p-1.5 rounded text-xs font-bold bg-white"
+                    value={config.heroStat3Value || '500+'}
+                    onChange={e => setConfig({...config, heroStat3Value: e.target.value})}
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Label (Courses)"
+                    className="border border-gray-300 p-1.5 rounded text-xs bg-white mt-1"
+                    value={config.heroStat3Label || 'Courses'}
+                    onChange={e => setConfig({...config, heroStat3Label: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+
+          </div>
           
           <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
             <h3 className="font-bold text-lg text-gray-900 border-b pb-2">Global Visibility</h3>
