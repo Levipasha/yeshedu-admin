@@ -350,7 +350,14 @@ export const AboutUsManagement = () => {
               )}
             </div>
             {aboutData.heroImage && (
-              <img src={aboutData.heroImage} alt="Hero" className="w-full h-56 object-cover rounded-2xl shadow-sm" />
+              <img 
+                src={aboutData.heroImage} 
+                alt="Hero" 
+                className="w-full h-56 object-cover rounded-2xl shadow-sm" 
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&auto=format&fit=crop&q=80';
+                }}
+              />
             )}
           </div>
 
@@ -363,7 +370,14 @@ export const AboutUsManagement = () => {
             </div>
             {aboutData.storyImage && (
               <div className="relative">
-                <img src={aboutData.storyImage} alt="Story" className="w-full h-52 object-cover rounded-2xl shadow-sm" />
+                <img 
+                  src={aboutData.storyImage} 
+                  alt="Story" 
+                  className="w-full h-52 object-cover rounded-2xl shadow-sm" 
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1562774053-701939374585?w=800&auto=format&fit=crop&q=80';
+                  }}
+                />
                 <div className="absolute bottom-3 left-3 bg-white/90 p-3 rounded-xl shadow border text-xs">
                   <p className="font-bold text-gray-900">{aboutData.storyBadgeTitle}</p>
                   <p className="text-gray-600">{aboutData.storyBadgeText}</p>
