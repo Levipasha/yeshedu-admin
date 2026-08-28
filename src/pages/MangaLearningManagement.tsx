@@ -848,7 +848,7 @@ export const MangaLearningManagement = () => {
             <input 
               type="text" 
               className="border border-gray-300 p-2.5 rounded-lg text-sm font-medium focus:ring-2 focus:ring-red-500 outline-none"
-              value={config.teachingMethodTitle || 'How We Help Students Improve'}
+              value={config.teachingMethodTitle || 'Our 4-Step Learning Journey'}
               onChange={e => setConfig({ ...config, teachingMethodTitle: e.target.value })}
             />
           </div>
@@ -858,7 +858,7 @@ export const MangaLearningManagement = () => {
             <input 
               type="text" 
               className="border border-gray-300 p-2.5 rounded-lg text-sm font-medium focus:ring-2 focus:ring-red-500 outline-none"
-              value={config.teachingMethodDescription || 'A proven 4-step structured learning journey designed to build conceptual clarity, boost confidence, and drive continuous academic growth.'}
+              value={config.teachingMethodDescription || 'A proven methodology that helps students learn better, practice smarter, and achieve more.'}
               onChange={e => setConfig({ ...config, teachingMethodDescription: e.target.value })}
             />
           </div>
@@ -871,10 +871,10 @@ export const MangaLearningManagement = () => {
             <button
               onClick={() => {
                 const currentSteps = config.teachingMethodSteps || [
-                  { step: '01', title: 'Learn', description: 'Understand concepts clearly with simple explanations.', badge: 'Step 1', themeColor: 'red', active: true },
-                  { step: '02', title: 'Practice', description: 'Strengthen knowledge through worksheets and assignments.', badge: 'Step 2', themeColor: 'blue', active: true },
-                  { step: '03', title: 'Test', description: 'Regular assessments identify strengths and weaknesses.', badge: 'Step 3', themeColor: 'amber', active: true },
-                  { step: '04', title: 'Improve', description: 'Personal feedback and doubt-clearing help students progress.', badge: 'Step 4', themeColor: 'emerald', active: true }
+                  { step: '01', title: 'Learn', description: 'Understand concepts clearly with simple explanations and real-life examples.', badge: 'Phase 1 of 4', themeColor: 'red', active: true },
+                  { step: '02', title: 'Practice', description: 'Strengthen knowledge through worksheets, assignments, and regular practice.', badge: 'Phase 2 of 4', themeColor: 'blue', active: true },
+                  { step: '03', title: 'Test', description: 'Regular assessments and quizzes to evaluate understanding and track progress.', badge: 'Phase 3 of 4', themeColor: 'amber', active: true },
+                  { step: '04', title: 'Improve', description: 'Personalized feedback and doubt clearing to help students improve continuously.', badge: 'Phase 4 of 4', themeColor: 'emerald', active: true }
                 ];
                 const newStep = {
                   step: `0${currentSteps.length + 1}`,
@@ -894,10 +894,10 @@ export const MangaLearningManagement = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             {((config.teachingMethodSteps?.length > 0) ? config.teachingMethodSteps : [
-              { step: '01', title: 'Learn', description: 'Understand concepts clearly with simple explanations.', badge: 'Step 1', themeColor: 'red', active: true },
-              { step: '02', title: 'Practice', description: 'Strengthen knowledge through worksheets and assignments.', badge: 'Step 2', themeColor: 'blue', active: true },
-              { step: '03', title: 'Test', description: 'Regular assessments identify strengths and weaknesses.', badge: 'Step 3', themeColor: 'amber', active: true },
-              { step: '04', title: 'Improve', description: 'Personal feedback and doubt-clearing help students progress.', badge: 'Step 4', themeColor: 'emerald', active: true }
+              { step: '01', title: 'Learn', description: 'Understand concepts clearly with simple explanations and real-life examples.', badge: 'Phase 1 of 4', themeColor: 'red', active: true },
+              { step: '02', title: 'Practice', description: 'Strengthen knowledge through worksheets, assignments, and regular practice.', badge: 'Phase 2 of 4', themeColor: 'blue', active: true },
+              { step: '03', title: 'Test', description: 'Regular assessments and quizzes to evaluate understanding and track progress.', badge: 'Phase 3 of 4', themeColor: 'amber', active: true },
+              { step: '04', title: 'Improve', description: 'Personalized feedback and doubt clearing to help students improve continuously.', badge: 'Phase 4 of 4', themeColor: 'emerald', active: true }
             ]).map((stepItem: any, sIdx: number) => (
               <div key={sIdx} className="border border-gray-200 rounded-2xl p-4 bg-gray-50/60 space-y-3">
                 <div className="flex items-center justify-between border-b border-gray-200 pb-2">
